@@ -5,27 +5,18 @@ import json
 import os
 import glob
 import time
-
-ENDPOINT = "a1dpf39ivechwj-ats.iot.us-east-1.amazonaws.com"
-CLIENT_ID = "testDevice"
-PATH_TO_CERT = "certs/device.pem.crt"
-PATH_TO_KEY = "certs/private.pem.key"
-PATH_TO_ROOT = "certs/AmazonRootCA1.pem"
-TOPIC = "iot/temperature"
-path="/sys/bus/w1/devices" 
-sensors=["28-01204f79c6d6"]
-suffix="w1_slave"
+import variables
 
 event_loop_group = io.EventLoopGroup(1)
 host_resolver = io.DefaultHostResolver(event_loop_group)
 client_bootstrap = io.ClientBootstrap(event_loop_group, host_resolver)
 mqtt_connection = mqtt_connection_builder.mtls_from_path(
-            endpoint=ENDPOINT,
-            cert_filepath=PATH_TO_CERT,
-            pri_key_filepath=PATH_TO_KEY,
+            endpoint=variables.ENDPOINT,
+            cert_filepath=variables.PATH_TO_CERT,
+            pri_key_filepath=variables.PATH_TO_KEY,
             client_bootstrap=client_bootstrap,
-            ca_filepath=PATH_TO_ROOT,
-            client_id=CLIENT_ID,
+            ca_filepath=variables.PATH_TO_ROOT,
+            client_id=variables.CLIENT_ID,
             clean_session=False,
             keep_alive_secs=6
             )
@@ -58,8 +49,8 @@ def convert(t):
     return temp_f
 
 def read_temp():
-    for s in sensors:
-        input_file=path+"/"+s+"/"+suffix
+    for s in variables.SENSOR:
+        input_file=variables.SENSORPATH+"/"+s+"/"+variables.SUFFIX
         f = open(input_file, "r")
         data=f.readlines()
         t=data[1][:5]
@@ -68,7 +59,7 @@ def read_temp():
 
 while True:
 	print("Connecting to {} with client ID '{}'...".format(
-        	ENDPOINT, CLIENT_ID))
+        	variables.ENDPOINT, variables.CLIENT_ID))
 	connect_future = mqtt_connection.connect()
 	connect_future.result()
 	print("Connected!")
@@ -78,7 +69,7 @@ while True:
 	print(data)	
 	message = {"temperature" : data, "time" : epoch_time }
 	print(json.dumps(message))	
-	mqtt_connection.publish(topic=TOPIC, payload=json.dumps(message), qos=mqtt.QoS.AT_MOST_ONCE)
+	mqtt_connection.publish(topic=variables.TOPIC, payload=json.dumps(message), qos=mqtt.QoS.AT_MOST_ONCE)
 	print("Published: '" + json.dumps(message) + "' to the topic: " + "'test/testing'")
 
 	print('Publish End')

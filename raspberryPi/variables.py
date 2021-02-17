@@ -1,0 +1,9 @@
+SENSOR=["28-01204f79c6d6"]
+CLIENT_ID="testDevice"
+ENDPOINT="a1dpf39ivechwj-ats.iot.us-east-1.amazonaws.com"
+PATH_TO_CERT="certs/device.pem.crt"
+PATH_TO_KEY="certs/private.pem.key"
+PATH_TO_ROOT="certs/AmazonRootCA1.pem"
+TOPIC="iot/temperature"
+SENSORPATH="/sys/bus/w1/devices"
+SUFFIX="w1_slave"
