@@ -1,0 +1,1 @@
+See [blog post](https://subaud.io/fridge-project/) for details and descriptions on how to deploy.  
